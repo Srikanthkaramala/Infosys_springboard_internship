@@ -1,7 +1,6 @@
 # Infosys_springboard_intership
 
-This repository contains all the tasks completed during the Infosys Springboard Internship program. Each task is documented with its objective, approach, and outcomes.
-
+This repository showcases all the tasks completed during the Infosys Springboard Internship program, with each task detailed in terms of its objectives, approach, and outcomes.
 ---
 
 ## 📋 Task Overview
