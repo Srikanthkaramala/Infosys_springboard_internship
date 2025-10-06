@@ -1,0 +1,87 @@
+import os
+import random
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+
+RANDOM_SEED = 42
+random.seed(RANDOM_SEED)
+np.random.seed(RANDOM_SEED)
+
+CSV_PATH = "education_policies.csv"
+TRAIN_PATH = "train_policies.csv"
+TEST_PATH = "test_policies.csv"
+
+def generate_synthetic_policies(n=500):
+    states = ["Karnataka","Maharashtra","Tamil Nadu","Uttar Pradesh","Delhi","Kerala","West Bengal","Gujarat","Rajasthan","Punjab"]
+    sectors = ["Primary","Secondary","Higher Education","Vocational","Early Childhood"]
+    target_groups = ["Students","Teachers","Rural Students","Urban Students","Women","Disadvantaged Groups","All"]
+    statuses = ["Proposed","Implemented","Under Review","Pilot"]
+    years = list(range(2015, 2026))
+    stakeholders_list = [
+        "Ministry of Education, Local NGOs",
+        "State Education Department, Private Partners",
+        "Teachers' Unions, Community Leaders",
+        "Central Government, Donors",
+        "EdTech Companies, Universities"
+    ]
+    funding_ranges = [(0.5,5),(5,20),(20,100),(0.1,0.5)]
+    aspects = ["learning outcomes","infrastructure","teacher quality","digital access","early childhood development","vocational skills"]
+    interventions = ["grants to schools","teacher training programs","digital device distribution","curriculum reform","scholarship schemes","public-private partnerships"]
+    focuses = ["marginalized communities","gender equity","rural accessibility","urban inclusion","STEM education","literacy and numeracy"]
+    secondary_aspects = ["community participation","governance","assessment quality","safety standards"]
+
+    records = []
+    for i in range(1, n+1):
+        policy_id = f"P{1000+i}"
+        title = f"{random.choice(['National','State','District'])} {random.choice(sectors)} Education Reform {random.randint(1,99)}"
+        sector = random.choice(sectors)
+        region = random.choice(states)
+        year = random.choice(years)
+        target_group = random.choice(target_groups)
+        status = random.choice(statuses)
+        funding = round(random.uniform(*random.choice(funding_ranges)), 2)
+        stakeholders = random.choice(stakeholders_list)
+        impact_score = round(random.uniform(0.1, 0.99), 3)
+        summary = f"This policy aims to improve {random.choice(aspects)} in {sector} through {random.choice(interventions)} in {region}."
+        goals = f"Increase reach by {random.randint(5,40)}% in {random.randint(1,5)} years."
+        full_text = f"{summary} Goals: {goals}"
+
+        records.append({
+            "policy_id": policy_id,
+            "title": title,
+            "sector": sector,
+            "region": region,
+            "year": year,
+            "target_group": target_group,
+            "status": status,
+            "funding_million_usd": funding,
+            "stakeholders": stakeholders,
+            "impact_score": impact_score,
+            "summary": summary,
+            "goals": goals,
+            "full_text": full_text
+        })
+
+    return pd.DataFrame(records)
+
+def preprocess(df):
+    df = df.copy()
+    df["text_for_nlp"] = (df["title"].astype(str) + ". " + df["full_text"].astype(str) + ". Stakeholders: " + df["stakeholders"].astype(str)).str.lower()
+    return df
+
+# Generate data
+if not os.path.exists(CSV_PATH):
+    df = generate_synthetic_policies(500)
+    df.to_csv(CSV_PATH, index=False)
+else:
+    df = pd.read_csv(CSV_PATH)
+
+# Preprocess and split
+df = preprocess(df)
+train_df, test_df = train_test_split(df, test_size=0.2, random_state=RANDOM_SEED, shuffle=True)
+
+train_df.to_csv(TRAIN_PATH, index=False)
+test_df.to_csv(TEST_PATH, index=False)
+
+print(f"Data prepared: {len(train_df)} train, {len(test_df)} test.")
