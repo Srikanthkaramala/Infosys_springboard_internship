@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PolicyNav — Public Policy Navigation Using AI</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #f7f9fc;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: #1a3d7c;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    h1 { margin: 0; font-size: 1.5rem; }
+
+    .search-section {
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+
+    .search-section input {
+      width: 50%;
+      padding: 0.7rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+
+    .search-section button {
+      background: #1a3d7c;
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-left: 0.5rem;
+    }
+
+    .results-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      padding: 1rem 2rem;
+    }
+
+    .result-card {
+      background: white;
+      padding: 1rem 1.2rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      transition: transform 0.2s;
+    }
+
+    .result-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .result-card h3 {
+      color: #1a3d7c;
+      margin-bottom: 0.3rem;
+    }
+
+    .meta {
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 0.4rem;
+    }
+
+    .score {
+      color: #1a7c3d;
+      font-weight: bold;
+    }
+
+    .no-results {
+      text-align: center;
+      color: #777;
+      padding: 2rem;
+    }
+
+    canvas {
+      max-width: 900px;
+      margin: 2rem auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>PolicyNav — Public Policy Navigation Using AI</h1>
+  </header>
+
+  <section class="search-section">
+    <form method="post" action="/search">
+      <input type="text" name="query" placeholder="Enter your query..." value="{{ query or '' }}" required />
+      <button type="submit">Search</button>
+    </form>
+  </section>
+
+  {% if results is not none %}
+    <section>
+      {% if results %}
+        <div class="results-container">
+          {% for r in results %}
+          <div class="result-card">
+            <h3>{{ r.title }} ({{ r.policy_id }})</h3>
+            <div class="meta">
+              Region: {{ r.region }} | Year: {{ r.year }} | Status: {{ r.status }}
+            </div>
+            <div class="meta">
+              Relevance Score: <span class="score">{{ r.score }}</span>
+            </div>
+            <p>{{ r.summary }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="no-results">No relevant policies found for “{{ query }}”. Try a different keyword.</p>
+      {% endif %}
+    </section>
+  {% endif %}
+
+  <section>
+    <h2 style="text-align:center;margin-top:2rem;">Relevance Score Visualization</h2>
+    <canvas id="policyChart"></canvas>
+  </section>
+
+  <script>
+    async function loadPolicyStats() {
+      try {
+        const res = await fetch("/api/policy_stats");
+        const data = await res.json();
+        if (data.years && data.regions) {
+          const ctx = document.getElementById("policyChart").getContext("2d");
+          new Chart(ctx, {
+            type: "bar",
+            data: {
+              labels: data.years.labels,
+              datasets: [{
+                label: "Policies per Year",
+                data: data.years.data,
+                backgroundColor: "#1a3d7c88"
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: { legend: { display: false } },
+              scales: {
+                x: { title: { display: true, text: "Year" } },
+                y: { title: { display: true, text: "Number of Policies" }, beginAtZero: true }
+              }
+            }
+          });
+        }
+      } catch (err) {
+        console.error("Chart load failed:", err);
+      }
+    }
+    loadPolicyStats();
+  </script>
+
+</body>
+</html>
