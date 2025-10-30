@@ -1,0 +1,27 @@
+Prepare a ppt
+slide 1--Title
+slide 2
+ 
+small intro about ur project
+ 
+slide 3 , explain component AI 
+ 
+1.ML
+2.DL
+3.NLP
+5.CV
+6.GEN AI
+7.AGENTIC AI
+ 
+Slide4 
+give pint  about NLP , (Diffrent Terminologies )
+
+Slide5 
+Phase of NLP
+1.load the data
+2.Preprossing (Techniques used)
+3. Training 
+4.Testing (Give primary education policy)
+ 
+slide 6
+Explain the Pickle file 

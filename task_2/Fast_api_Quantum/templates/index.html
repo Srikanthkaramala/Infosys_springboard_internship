@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PolicyNav: Quantum-Enhanced Policy Analysis</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the app */
+        body { font-family: 'Inter', sans-serif; }
+        /* Simple focus ring for accessibility */
+        .focus-ring-blue:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); /* blue-500 with opacity */
+        }
+        /* Style for the simulated charts */
+        .chart-placeholder {
+            min-height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px dashed #ccc;
+            border-radius: 8px;
+            background-color: #f9fafb;
+            color: #6b7280;
+            font-size: 14px;
+        }
+    </style>
+    <!-- Load Chart.js (Placeholder for actual implementation) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+    <div class="container mx-auto p-4 md:p-8">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-extrabold text-blue-900 tracking-tight mb-2">
+                PolicyNav <span class="text-blue-600">Quantum Pilot</span>
+            </h1>
+            <!-- Status now reflects the backend dependency -->
+            <p id="auth-status" class="text-sm text-gray-500">System Status: Backend-Driven Search (TF-IDF/FastAPI)</p>
+        </header>
+
+        <!-- Search Form -->
+        <div class="max-w-3xl mx-auto mb-10 p-6 bg-white shadow-xl rounded-xl">
+            <!-- 
+                CRITICAL CHANGE: Form now POSTs to /search (handled by main.py)
+                The input name MUST be 'query' to match the FastAPI function signature (query: str = Form(...))
+            -->
+            <form id="fastapi-search-form" method="POST" action="/search" class="flex flex-col md:flex-row gap-4">
+                <input
+                    type="text"
+                    name="query"
+                    id="search-query-input"
+                    placeholder="Search policies (e.g., 'Health insurance coverage' or 'UBI pilot')..."
+                    required
+                    class="flex-grow p-3 text-lg border-2 border-blue-200 rounded-lg focus-ring-blue transition duration-150"
+                    <!-- Jinja2 keeps the query box populated after submission -->
+                    value="{{ query if query else '' }}" 
+                >
+                <button
+                    type="submit"
+                    id="search-button"
+                    class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-150 shadow-md"
+                >
+                    Analyze Policy
+                </button>
+            </form>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:col-span-1 lg:grid-cols-3 gap-8">
+            <!-- Quantum/Dashboard Panel (Left/Top) -->
+            <div class="lg:col-span-1 space-y-8">
+                <!-- Data Visualization Dashboard -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-yellow-500">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">📊 Data Visualization Dashboard</h2>
+                    <p class="text-sm text-gray-500 mb-4">Metrics derived from the full dataset (simulated).</p>
+                    <div class="space-y-4">
+                        <div id="relevance-chart-placeholder" class="chart-placeholder">
+                            Simulated Chart.js: Policy Relevance Distribution
+                        </div>
+                        <div id="wordcloud-placeholder" class="chart-placeholder">
+                            Simulated Wordcloud: Top Policy Keywords
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QML Model Selector -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-purple-600">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">⚛️ QML Analysis Model</h2>
+                    <p class="text-sm text-gray-500 mb-4">Select the quantum model for enhanced classification and feature engineering (Qiskit/PennyLane backend simulation).</p>
+                    <select id="qml-model-selector" class="w-full p-3 border-2 border-purple-200 rounded-lg focus-ring-blue bg-white transition duration-150">
+                        <option value="QSVC" selected>QSVC (Quantum Support Vector Classifier)</option>
+                        <option value="QCNN">QCNN (Quantum Convolutional Neural Network)</option>
+                        <option value="VQC">VQC (Variational Quantum Classifier)</option>
+                        <option value="Classical-SVC">Classical SVC (Baseline)</option>
+                    </select>
+                    <p class="mt-3 text-xs text-gray-600" id="model-description">
+                        **QSVC:** Ideal for policy classification by mapping data to a high-dimensional quantum Hilbert space using a Quantum Kernel for potentially better separation.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Search Results Area (Right/Bottom) -->
+            <div class="lg:col-span-2">
+                <div id="results-container" class="space-y-6">
+                    <!-- CRITICAL CHANGE: Jinja2 loop to display search results from main.py -->
+                    {% if results %}
+                        <div class="text-sm text-gray-500 mb-4 text-right">
+                            Results found: {{ results | length }} (using TF-IDF Search)
+                        </div>
+                        {% for r in results %}
+                        <div class="bg-white p-6 rounded-xl shadow-md transition duration-200 hover:shadow-lg border-l-4 border-blue-500">
+                            <h3 class="text-xl font-semibold text-blue-800 mb-1">{{ r.title }} <span class="text-sm font-normal text-gray-400">({{ r.policy_id }})</span></h3>
+                            <div class="text-xs text-gray-500 mb-3 flex flex-wrap gap-x-4">
+                                <span>Region: <span class="font-medium text-gray-600">{{ r.region }}</span></span>
+                                <span>Year: <span class="font-medium text-gray-600">{{ r.year }}</span></span>
+                                <span>Status: <span class="font-medium text-gray-600">{{ r.status }}</span></span>
+                            </div>
+                            <div class="text-sm text-gray-700 line-clamp-3">{{ r.summary }}</div>
+                            <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between items-center">
+                                <span class="text-sm font-bold">TF-IDF Score:</span>
+                                <!-- Score is used for color simulation -->
+                                <span class="text-lg font-extrabold" style="color: hsl({{ r.score * 120 }}, 70%, 40%);">{{ r.score | round(3) }}</span> 
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="bg-white p-6 rounded-xl shadow-md text-gray-500 text-center">
+                            Search for a policy query to see backend-driven results.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // --- CLIENT-SIDE LOGIC (Now focused on dashboard and UX) ---
+        const modelSelector = document.getElementById('qml-model-selector');
+        const modelDescriptionEl = document.getElementById('model-description');
+
+        // Mock data for dashboard visualization (since the search results may be empty initially)
+        const mockPoliciesForDashboard = [
+             { score: 0.95 }, { score: 0.88 }, { score: 0.98 }, { score: 0.92 }, { score: 0.86 }, { score: 0.85 },
+             { score: 0.97 }, { score: 0.79 }, { score: 0.70 },
+        ];
+        
+        // This function runs on initial load and after every search 
+        // (FastAPI renders the page again, so this JS runs fresh).
+        function updateDashboard() {
+            // Check if FastAPI passed results. If so, use those scores; otherwise, use mock data.
+            const resultsFromFastAPI = document.querySelectorAll('#results-container > div:not(.text-sm)'); 
+            let scores, policyCount;
+
+            if (resultsFromFastAPI.length > 0) {
+                // If results are visible, calculate score from the rendered HTML for simulation
+                scores = Array.from(resultsFromFastAPI).map(div => {
+                    const scoreText = div.querySelector('.text-lg.font-extrabold').textContent.trim();
+                    // Extract numerical part from "0.xxx"
+                    return parseFloat(scoreText.replace('%', ''));
+                });
+                policyCount = resultsFromFastAPI.length;
+            } else {
+                // If no results (initial load), use the full mock data
+                scores = mockPoliciesForDashboard.map(p => p.score);
+                policyCount = mockPoliciesForDashboard.length;
+            }
+
+            const chartPlaceholder = document.getElementById('relevance-chart-placeholder');
+            const wordcloudPlaceholder = document.getElementById('wordcloud-placeholder');
+            
+            const avgScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
+            
+            chartPlaceholder.innerHTML = `
+                <div class="p-2 text-center">
+                    <p class="text-3xl font-bold text-blue-700">${(avgScore * 100).toFixed(1)}%</p>
+                    <p class="text-sm">Average Relevance Score (QML)</p>
+                    <p class="text-xs mt-2 text-gray-400">Visualization using Chart.js based on ${policyCount} documents.</p>
+                </div>
+            `;
+
+            // Wordcloud content remains simulated for this version
+            const keywordMap = { 'Funding': 5, 'Health': 4, 'Poverty': 5, 'Tech': 3, 'Education': 4 };
+            const topKeywords = Object.entries(keywordMap).sort((a, b) => b[1] - a[1]).map(e => e[0]).join(', ');
+
+            wordcloudPlaceholder.innerHTML = `
+                <div class="p-2 text-center">
+                    <p class="font-semibold text-gray-700">Top Keywords:</p>
+                    <p class="text-xs text-gray-600">${topKeywords}</p>
+                    <p class="text-xs mt-2 text-gray-400">Wordcloud simulation (based on full dataset).</p>
+                </div>
+            `;
+        }
+
+
+        // --- EVENT LISTENERS (Only for selectors, form handled by HTML) ---
+
+        modelSelector.addEventListener('change', () => {
+            const model = modelSelector.value;
+            let description = '';
+            switch(model) {
+                case 'QSVC':
+                    description = '**QSVC:** Ideal for policy classification by mapping data to a high-dimensional quantum Hilbert space using a Quantum Kernel for potentially better separation.';
+                    break;
+                case 'QCNN':
+                    description = '**QCNN:** Uses a quantum circuit analogy of convolutional and pooling layers for feature extraction. Useful for identifying structural patterns in complex policy documents.';
+                    break;
+                case 'VQC':
+                    description = '**VQC (Quantum Neural Network):** A general variational circuit using an Ansatz (parameterized circuit) optimized by classical methods for flexible classification tasks.';
+                    break;
+                case 'Classical-SVC':
+                    description = '**Classical SVC (Baseline):** The standard non-quantum Support Vector Classifier for comparison of performance and speed.';
+                    break;
+            }
+            modelDescriptionEl.innerHTML = description;
+        });
+
+        // Initialize the app on window load
+        window.onload = updateDashboard;
+
+    </script>
+</body>
+</html>
