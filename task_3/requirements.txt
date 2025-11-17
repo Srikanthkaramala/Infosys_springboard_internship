@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+jinja2
+pandas
+scikit-learn
+numpy
+joblib
+pennylane
+python-multipart
+chartjs
