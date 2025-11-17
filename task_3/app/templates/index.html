@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quantum Policy Search</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>⚛️ Quantum Policy Search</h1>
+      <p class="subtitle">Find policies using quantum-inspired semantic search</p>
+    </header>
+
+    <main class="container">
+      <section class="card">
+        <h2>1. Upload Policies Data</h2>
+        <form action="/upload-csv" method="post" enctype="multipart/form-data">
+          <label for="file-upload">Choose policies.csv file:</label>
+          <input id="file-upload" type="file" name="file" accept=".csv" required />
+          <button type="submit">📤 Upload & Build Models</button>
+        </form>
+
+        {% if message %}
+        <div class="message success">
+          <p>{{ message }}</p>
+        </div>
+        {% endif %}
+      </section>
+
+      <section class="card">
+        <h2>2. Search Policies</h2>
+        <form action="/search" method="post">
+          <label for="q">Query:</label>
+          <input id="q" type="text" name="q" placeholder="E.g., Financial support for farmers..." required />
+
+          <label for="top_k">Top K Results:</label>
+          <input id="top_k" type="number" name="top_k" value="5" min="1" max="20" />
+
+          <button type="submit">🔍 Run Quantum Search</button>
+        </form>
+
+        {% if results %}
+        <hr>
+        <h2>Results for "{{ query }}" (Ranked by Quantum Score)</h2>
+        <div class="results-grid">
+          {% for r in results %}
+          <div class="policy-tile">
+            <h3>{{ r.title }}</h3>
+            
+            <p class="meta">
+              📍 Region: {{ r.region }} | 📅 Year: {{ r.year }} | ⚙️ Status: {{ r.status }}
+            </p>
+            
+            <div class="score-container" style="justify-content: center;">
+                <div class="score-badge q-score-badge" style="width: 100%;">
+                    <span class="score-label">Quantum Similarity Score</span>
+                    <span>⚛️ {{ r.similarity | float | round(3) }}</span> 
+                </div>
+            </div>
+            
+            <p class="summary">{{ r.summary }}</p>
+            
+            <button class="toggle-button" onclick="toggleFullText('full_text_{{ loop.index }}', this)">
+              Read Full Text
+            </button>
+            <div id="full_text_{{ loop.index }}" class="full-text-content">
+              <strong>Full Text:</strong><br>{{ r.full_text }}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </section>
+    </main>
+    
+    <script>
+      function toggleFullText(id, button) {
+        const element = document.getElementById(id);
+        if (element.style.display === "none" || element.style.display === "") {
+          element.style.display = "block";
+          button.textContent = "Hide Full Text";
+        } else {
+          element.style.display = "none";
+          button.textContent = "Read Full Text";
+        }
+      }
+      // Initialize hidden state for all full text content
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.full-text-content').forEach(el => {
+          el.style.display = 'none';
+        });
+      });
+    </script>
+    
+  </body>
+</html>

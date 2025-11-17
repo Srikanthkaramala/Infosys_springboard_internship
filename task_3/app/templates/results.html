@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Results — Quantum Policy Search</title>
+    <link rel="stylesheet" href="/static/style.css">
+  </head>
+  <body>
+    <div class="container">
+      <h1>Search results for "{{ query }}"</h1>
+      <a href="/">← Back</a>
+
+      {% if results %}
+        <ol>
+        {% for r in results %}
+          <li>
+            <h3>{{ r.title }} <small>({{ r.policy_id }})</small></h3>
+            <p><strong>Region:</strong> {{ r.region }} | <strong>Year:</strong> {{ r.year }} | <strong>Status:</strong> {{ r.status }}</p>
+            <p>{{ r.full_text[:400] }}{% if r.full_text|length > 400 %}...{% endif %}</p>
+            <p><em>Similarity: {{ "{:.3f}".format(r.similarity) }}</em></p>
+          </li>
+        {% endfor %}
+        </ol>
+      {% else %}
+        <p>No results returned.</p>
+      {% endif %}
+
+    </div>
+  </body>
+</html>
