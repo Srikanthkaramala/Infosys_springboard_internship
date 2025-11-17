@@ -1,0 +1,235 @@
+:root {
+  /* Modern, cleaner color palette */
+  --bg: #f8f9fa; /* Light Gray Background */
+  --card-bg: #ffffff; /* White Cards */
+  --accent: #007bff; /* Primary Blue (e.g., for buttons/headers) */
+  --accent-light: #e6f2ff; /* Very Light Blue */
+  --text: #343a40; /* Dark Text */
+  --muted: #6c757d; /* Muted Gray */
+  --radius: 8px; /* Slightly smaller radius for modern feel */
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Softer shadow */
+  
+  /* Custom Colors for Scores */
+  --q-color: #28a745; /* Green for Quantum (Success/New Tech) */
+  --c-color: #17a2b8; /* Cyan/Teal for Classical (Comparison) */
+}
+
+body {
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+header {
+  text-align: center;
+  /* Cleaner gradient header */
+  background: linear-gradient(135deg, #0056b3, var(--accent));
+  color: white;
+  padding: 3rem 1rem;
+  box-shadow: var(--shadow);
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: 300; /* Lighter font weight for modern titles */
+}
+
+.subtitle {
+  opacity: 0.9;
+  margin-top: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 2rem; /* More padding */
+  box-shadow: var(--shadow);
+  margin-bottom: 2rem;
+  border-left: 5px solid var(--accent-light); /* Subtle accent border */
+}
+
+h2 {
+  margin-top: 0;
+  color: var(--accent);
+  border-bottom: 1px solid #dee2e6; /* Lighter separator */
+  padding-bottom: 0.75rem;
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+label {
+  display: block;
+  margin-top: 1rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+input[type="file"],
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.8rem 1rem; /* More padding */
+  border: 1px solid #ced4da; /* Subtle border */
+  border-radius: var(--radius);
+  box-sizing: border-box;
+  transition: border-color 0.3s;
+}
+input:focus {
+    border-color: var(--accent);
+    outline: none;
+}
+
+button {
+  margin-top: 1.5rem;
+  padding: 0.8rem 1.5rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+.message {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-left: 5px solid var(--q-color);
+  background: #e9f7ee;
+  border-radius: var(--radius);
+}
+
+/* --- Results Grid & Tile --- */
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Larger minimum size */
+  gap: 1.5rem; /* Increased gap */
+  margin-top: 2rem;
+}
+
+.policy-tile {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e9ecef;
+    transition: transform 0.2s;
+}
+.policy-tile:hover {
+    transform: translateY(-3px); /* Subtle hover effect */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.policy-tile h3 {
+  font-size: 1.25rem;
+  color: var(--text);
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.meta {
+    font-size: 0.85rem;
+    color: var(--muted);
+    border-bottom: 1px dashed #e9ecef;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.summary {
+    font-size: 0.95rem;
+    color: var(--text);
+    margin-bottom: 1rem;
+}
+
+/* --- Score Visualization (Key for a Modern Look) --- */
+
+.score-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    margin-bottom: 1rem;
+}
+
+.score-badge {
+    padding: 0.6rem 1rem;
+    border-radius: var(--radius);
+    text-align: center;
+    flex-grow: 1;
+    font-size: 1rem;
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+}
+
+.score-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-bottom: 0.3rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.q-score-badge {
+    background-color: #d4edda; /* Light Green */
+    color: var(--q-color);
+    border: 1px solid #c3e6cb;
+}
+
+.c-score-badge {
+    background-color: #d1ecf1; /* Light Cyan/Teal */
+    color: var(--c-color);
+    border: 1px solid #bee5eb;
+}
+
+/* --- Collapsible Button --- */
+.toggle-button {
+  background: #f8f9fa; /* White/Light button */
+  color: var(--accent);
+  margin-top: 1rem;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-weight: 600;
+  display: block; 
+  width: 100%;
+  text-align: center;
+  transition: background-color 0.3s;
+}
+
+.toggle-button:hover {
+  background: var(--accent);
+  color: white;
+}
+
+.full-text-content {
+    display: none;
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #f8f9fa; 
+    border: 1px solid #dee2e6;
+    border-radius: var(--radius);
+    font-size: 0.85em;
+    white-space: pre-wrap; 
+    max-height: 200px; /* Constrain height */
+    overflow-y: auto; /* Enable scrolling */
+}
