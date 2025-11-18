@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PolicyNav | AI-Powered Policy Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Dieter Rams: Less but better, good design is unobtrusive */
+        :root {
+            --primary-blue: #007aff; /* Apple-like Blue for actions */
+            --sidebar-dark: #1c1c1e; /* Deep dark gray (inspired by iOS dark mode) */
+            --background-light: #f5f5f7; /* Very light, clean background */
+            --card-background: #ffffff;
+            --text-color-dark: #1d1d1f;
+            --text-color-light: #f5f5f7;
+            --border-radius-lg: 12px;
+            --border-radius-sm: 8px;
+            /* Neumorphic/Glass Shadow */
+            --shadow-glass: 0 4px 16px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-light);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            min-height: 100vh;
+            color: var(--text-color-dark);
+        }
+
+        /* --- Sidebar (Left Panel) --- */
+        .sidebar {
+            width: 260px; /* Slightly narrower */
+            padding: 25px 15px;
+            background-color: var(--sidebar-dark);
+            color: var(--text-color-light);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sidebar-header h1 {
+            color: #ffffff;
+            font-size: 1.6em;
+            font-weight: 700;
+            margin: 0;
+        }
+        .sidebar-header span {
+            font-size: 0.8em;
+            color: #8e8e93; /* Subtle light gray */
+        }
+        
+        .sidebar-section {
+            padding: 15px;
+            border-radius: var(--border-radius-lg);
+            background-color: rgba(255, 255, 255, 0.05); /* Subtle inner layer */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-title {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #e5e5ea; /* High contrast for title */
+            margin-bottom: 15px;
+        }
+
+        /* --- Input and Button --- */
+        .sidebar input[type="text"] {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: var(--border-radius-sm);
+            border: 1px solid #48484a;
+            background-color: #3a3a3c;
+            color: white;
+            font-size: 0.9em;
+            box-sizing: border-box;
+            transition: 0.2s;
+        }
+
+        .sidebar input[type="text"]:focus {
+            border-color: var(--primary-blue);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.5);
+        }
+
+        .sidebar button {
+            width: 100%;
+            padding: 10px 12px;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            color: white; /* Default button text color is white */
+        }
+        
+        /* Specific button colors */
+        .btn-primary { background-color: var(--primary-blue); }
+        .btn-primary:hover { background-color: #0056b3; }
+        .btn-quantum { background-color: #5856d6; } /* Purple/Indigo */
+        .btn-quantum:hover { background-color: #4341b1; }
+        .btn-export { background-color: #34c759; } /* Green for success */
+        .btn-export:hover { background-color: #28a745; }
+
+        .mic-button {
+            width: 40px !important;
+            height: 40px !important;
+            padding: 0 !important;
+            border-radius: 50% !important;
+            background-color: #ff9500 !important; /* Orange for Mic */
+            font-size: 1.1em !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .voice-section {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .voice-section input {
+            flex-grow: 1;
+        }
+
+        .voice-status {
+            font-size: 0.75em;
+            color: #8e8e93;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        /* --- Main Content Area --- */
+        .main-content {
+            flex-grow: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .main-content h2 {
+            font-size: 1.8em;
+            color: var(--text-color-dark);
+            margin-bottom: 25px;
+            font-weight: 700;
+            border-bottom: 1px solid #e5e5ea;
+            padding-bottom: 10px;
+        }
+        
+        /* --- Results Grid (Glass/Neumorphic Card) --- */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .result-card {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-glass);
+            padding: 20px;
+            transition: transform 0.2s;
+            /* Don Norman: Grouping and hierarchy */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .result-card h3 {
+            font-size: 1.1em;
+            color: var(--primary-blue);
+            margin-top: 0;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .policy-id {
+            font-size: 0.8em;
+            color: #8e8e93;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .policy-summary {
+            font-size: 0.9em;
+            color: #4a4a4a;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .metadata-section {
+            font-size: 0.85em;
+            color: #555;
+            padding-top: 15px;
+            border-top: 1px solid #e5e5ea;
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .metadata-section span {
+            font-weight: 500;
+        }
+        
+        .metadata-section strong {
+            font-weight: 600;
+            color: var(--text-color-dark);
+        }
+
+        /* Score Styling */
+        .scores-section {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        
+        .score-relevance { color: var(--primary-blue); }
+        .score-quantum { color: #5856d6; }
+
+        /* --- Chart Section --- */
+        .chart-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .chart-container {
+            background: var(--card-background);
+            padding: 20px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-glass);
+        }
+
+        @media (max-width: 900px) {
+            body {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 20px;
+            }
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1>PolicyNav</h1>
+            <span>AI-Powered Policy Assistant</span>
+        </div>
+        
+        <div class="sidebar-section">
+            <div class="section-title">🎤 Voice Search</div>
+            <form method="post" action="/voice_search" id="voiceSearchForm">
+                <div class="voice-section">
+                    <button type="button" class="mic-button" onclick="startListening()">🎤</button>
+                    <input type="text" id="voiceQuery" name="query" placeholder="Speak your query..." required>
+                </div>
+                <button type="submit" id="submitBtn" class="btn-primary" style="display: none; margin-top: 10px;">Search by Voice</button>
+            </form>
+            <div id="voiceStatus" class="voice-status">Click mic to begin.</div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="section-title">📚 Category Search</div>
+            <form method="post" action="/search_education">
+                <input type="text" name="query" placeholder="Education Policy..." required>
+                <button type="submit" class="btn-primary">Search Education</button>
+            </form>
+
+            <form method="post" action="/search_poverty" style="margin-top: 15px;">
+                <input type="text" name="query" placeholder="Poverty Policy..." required>
+                <button type="submit" class="btn-primary">Search Poverty</button>
+            </form>
+
+            <form method="post" action="/search_quantum" style="margin-top: 15px;">
+                <input type="text" name="query" placeholder="Quantum Search (Experimental)" required>
+                <button type="submit" class="btn-quantum">Quantum Search</button>
+            </form>
+        </div>
+        
+        {% if results %}
+        <div style="flex-grow: 1;"></div> <form method="post" action="/export_csv" style="margin-top: auto;">
+            <input type="hidden" name="query" value="{{ query }}">
+            <button type="submit" class="btn-export">⬇️ Export Results</button>
+        </form>
+        {% endif %}
+    </div>
+
+    <div class="main-content">
+        <h2>{% if query %}Search Results for "{{ query }}"{% else %}Welcome to PolicyNav{% endif %}</h2>
+        
+        {% if results %}
+        <div class="results-grid">
+            {% for r in results %}
+            <div class="result-card">
+                <div>
+                    <h3>{{ r.title }}</h3>
+                    <span class="policy-id">#{{ r.policy_id }}</span>
+                    <p class="policy-summary">{{ r.summary }}</p>
+                </div>
+                
+                <div class="metadata-section">
+                    <span>Region: <strong>{{ r.region }}</strong></span>
+                    <span>Year: <strong>{{ r.year }}</strong></span>
+                    <span>Status: <strong>{{ r.status }}</strong></span>
+                </div>
+                
+                <div class="scores-section">
+                    <span>Relevance: <span class="score-relevance">{{ r.score }}</span></span>
+                    {% if r.quantum_score is defined %}
+                    <span>Quantum: <span class="score-quantum">{{ r.quantum_score }}</span></span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <h2 style="margin-top: 50px;">Policy Visualization Dashboard</h2>
+        <div class="chart-section">
+            <div class="chart-container"><canvas id="policyChart"></canvas></div>
+            <div class="chart-container"><canvas id="regionChart"></canvas></div>
+            <div class="chart-container"><canvas id="scatterChart"></canvas></div>
+            {% if results[0].quantum_score is defined %}
+            <div class="chart-container"><canvas id="quantumChart"></canvas></div>
+            {% endif %}
+        </div>
+        {% else %}
+        <p style="font-size: 1.1em; color: #7f8c8d;">Use the sidebar to input a voice or text query to begin exploring public policies.</p>
+        {% endif %}
+    </div>
+
+    <script>
+	function startListening() {
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'en-IN';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        const status = document.getElementById("voiceStatus");
+        const input = document.getElementById("voiceQuery");
+        const submitBtn = document.getElementById("submitBtn");
+
+        status.textContent = "Listening... Speak now.";
+        input.value = ""; 
+        submitBtn.style.display = "none";
+
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            input.value = transcript;
+            submitBtn.style.display = "block"; 
+            status.textContent = `Query captured: "${transcript}". Click Search.`;
+        };
+
+        recognition.onerror = function(event) {
+            status.textContent = "Voice recognition error: " + event.error;
+        };
+
+        recognition.onend = function() {
+            if (!input.value) {
+                status.textContent = "No input detected. Try again.";
+            }
+        };
+
+        recognition.start();
+	}
+    
+    // --- Charting Logic ---
+    const results = {{ results | tojson | safe }};
+
+    if (results && results.length > 0) {
+        const labels = results.map(r => r.title);
+        const scores = results.map(r => r.score);
+        const chartColors = [
+            '#007aff', '#34c759', '#ff3b30', '#ff9500', '#5856d6', 
+            '#3a3a3c', '#9b59b6', '#1abc9c', '#e67e22', '#7f8c8d'
+        ];
+        
+        // 1. Policy Similarity Bar Chart (Text Relevance)
+        new Chart(document.getElementById('policyChart'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Text Similarity Score',
+                    data: scores,
+                    backgroundColor: chartColors[0] + 'AA',
+                    borderColor: chartColors[0],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { title: { display: true, text: 'Policies Ranked by Text Relevance' } },
+                scales: {
+                    y: { beginAtZero: true, max: 1 }
+                }
+            }
+        });
+
+        // 2. Policy Distribution by Region Pie Chart
+        const regionCounts = {};
+        results.forEach(r => {
+            regionCounts[r.region] = (regionCounts[r.region] || 0) + 1;
+        });
+
+        new Chart(document.getElementById('regionChart'), {
+            type: 'pie',
+            data: {
+                labels: Object.keys(regionCounts),
+                datasets: [{
+                    data: Object.values(regionCounts),
+                    backgroundColor: chartColors.slice(0, Object.keys(regionCounts).length)
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { title: { display: true, text: 'Policy Distribution by Region' } }
+            }
+        });
+
+        // 3. Score vs Year Scatter Plot
+        new Chart(document.getElementById('scatterChart'), {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Relevance Score vs Policy Year',
+                    data: results.map((r) => ({ x: r.year, y: r.score })),
+                    backgroundColor: chartColors[3],
+                    pointRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { title: { display: true, text: 'Relevance vs. Year of Publication' } },
+                scales: {
+                    x: { title: { display: true, text: 'Year' }, type: 'linear', ticks: { stepSize: 1 } },
+                    y: { title: { display: true, text: 'Similarity Score' }, min: 0, max: 1 }
+                }
+            }
+        });
+        
+        // 4. Quantum Chart (Conditional)
+        const hasQuantumScore = results[0].quantum_score !== undefined;
+        if (hasQuantumScore) {
+            const quantumScores = results.map(r => r.quantum_score);
+            new Chart(document.getElementById("quantumChart"), {
+                type: "bar",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "Quantum Score",
+                        data: quantumScores,
+                        backgroundColor: chartColors[4] + 'AA', 
+                        borderColor: chartColors[4],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: "y",
+                    responsive: true,
+                    plugins: { title: { display: true, text: 'Policies Ranked by Quantum Model' } },
+                    scales: {
+                        x: { beginAtZero: true, max: 1 },
+                        y: { ticks: { autoSkip: false } }
+                    }
+                }
+            });
+        }
+    }
+    </script>
+</body>
+</html>
