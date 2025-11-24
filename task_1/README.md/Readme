@@ -1,60 +1,60 @@
-Task 1 — Policy Dataset Exploration and Vectorization
+Task Date:29/9/2025
 
-Submodule: task_1/ — Policy dataset preprocessing, TF-IDF vectorization, and exploratory NLP analysis.
+# Task 1 — Policy Dataset Exploration and Vectorization
 
-This module represents the first stage of the internship project, focused on preparing and analyzing public policy datasets. It covers data preprocessing, TF-IDF vectorization, and early-stage NLP exploration, laying the foundation for building intelligent policy navigation systems.
+**Submodule:** `task_1/` — Policy dataset preprocessing, TF‑IDF vectorization, and exploratory NLP analysis
 
-Key Features
+This module implements the first step of the internship project: preparing and analyzing policy datasets. It focuses on **data preprocessing**, **TF‑IDF vectorization**, and **basic NLP exploration** to build a foundation for later intelligent policy navigation tasks.
 
-Dataset Preparation — Includes raw, training, and test CSV files for policy data.
 
-TF-IDF Vectorization — Converts policy text into numerical features for ML/NLP tasks.
+## Key Features
+- **Dataset Preparation** — Includes training and test CSVs for policy data  
+- **TF‑IDF Vectorization** — Converts policy text into numerical vectors for ML/NLP tasks  
+- **Pretrained Vectorizer** — Reusable `policy_vectorizer.pkl` for consistent text processing  
+- **TF‑IDF Matrix** — Precomputed `policy_tfidf_matrix.pkl` for efficient experimentation  
+- **Exploratory Notebook** — `infosys_nlp.ipynb` demonstrates preprocessing and analysis steps  
 
-Pretrained Vectorizer — policy_vectorizer.pkl ensures consistent text preprocessing.
-
-TF-IDF Matrix — Precomputed policy_tfidf_matrix.pkl for faster experimentation.
-
-Exploratory Notebook — infosys_nlp.ipynb demonstrates preprocessing and analysis flow.
-
-Folder Structure
+## Folder Structure
+```
 task_1/
 │
-├── education_policies.csv      # Example dataset
-├── train_policies.csv          # Training dataset
-├── test_policies.csv           # Test dataset
-├── policy_vectorizer.pkl       # Saved TF-IDF vectorizer
-├── policy_tfidf_matrix.pkl     # Saved TF-IDF matrix
-├── infosys_nlp.ipynb           # Jupyter notebook for NLP analysis
+├── education_policies.csv     # Example dataset
+├── train_policies.csv         # Training dataset
+├── test_policies.csv          # Test dataset
+├── policy_vectorizer.pkl      # Saved TF-IDF vectorizer
+├── policy_tfidf_matrix.pkl    # Saved TF-IDF matrix
+├── infosys_nlp.ipynb          # Jupyter notebook for analysis
 └── README.md
+```
 
-Setup Guide
-1. Create and Activate Virtual Environment
+## Setup Guide
+
+### 1. Create and Activate Virtual Environment
+```bash
 cd task_1
 python -m venv venv
-source venv/bin/activate        # macOS / Linux
+source venv/bin/activate        # macOS/Linux
 venv\Scripts\activate           # Windows
+```
 
-2. Install Dependencies
+### 2. Install Dependencies
+```bash
 pip install -r requirements.txt
+```
 
-3. Run the Notebook
+### 3. Run the Notebook
+```bash
 jupyter notebook infosys_nlp.ipynb
+```
 
-Dataset Format
-
-Each CSV file contains policy metadata and full text in the following structure:
-
+## Dataset Format
+The datasets are structured CSV files with fields such as:
+```
 policy_id,title,full_text,state,year,category,status,region
 1,Education Reform Act,Full text of the policy...,Delhi,2021,Education,Active,North
+```
 
-Tech Stack
-Component	Description
-Python	Core programming language
-scikit-learn	TF-IDF vectorization and preprocessing
-Pandas / NumPy	Data manipulation and handling
-Jupyter	Interactive exploration environment
-Credits
+---
 
-Infosys Springboard Internship Program
-
-Python ML ecosystem & scikit-learn
+## Tech Stack
+| Component       | Description                                |
