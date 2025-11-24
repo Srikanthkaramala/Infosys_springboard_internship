@@ -1,0 +1,45 @@
+Task 1 — Policy Dataset Exploration and Vectorization
+Submodule: task_1/ — Policy dataset preprocessing, TF‑IDF vectorization, and exploratory NLP analysis
+
+This module implements the first step of the internship project: preparing and analyzing policy datasets. It focuses on data preprocessing, TF‑IDF vectorization, and basic NLP exploration to build a foundation for later intelligent policy navigation tasks.
+
+Key Features
+Dataset Preparation — Includes training and test CSVs for policy data
+TF‑IDF Vectorization — Converts policy text into numerical vectors for ML/NLP tasks
+Pretrained Vectorizer — Reusable policy_vectorizer.pkl for consistent text processing
+TF‑IDF Matrix — Precomputed policy_tfidf_matrix.pkl for efficient experimentation
+Exploratory Notebook — infosys_nlp.ipynb demonstrates preprocessing and analysis steps
+Folder Structure
+task_1/
+│
+├── education_policies.csv     # Example dataset
+├── train_policies.csv         # Training dataset
+├── test_policies.csv          # Test dataset
+├── policy_vectorizer.pkl      # Saved TF-IDF vectorizer
+├── policy_tfidf_matrix.pkl    # Saved TF-IDF matrix
+├── infosys_nlp.ipynb          # Jupyter notebook for analysis
+└── README.md
+Setup Guide
+1. Create and Activate Virtual Environment
+cd task_1
+python -m venv venv
+source venv/bin/activate        # macOS/Linux
+venv\Scripts\activate           # Windows
+2. Install Dependencies
+pip install -r requirements.txt
+3. Run the Notebook
+jupyter notebook infosys_nlp.ipynb
+Dataset Format
+The datasets are structured CSV files with fields such as:
+
+policy_id,title,full_text,state,year,category,status,region
+1,Education Reform Act,Full text of the policy...,Delhi,2021,Education,Active,North
+Tech Stack
+Component	Description
+Python	Core programming language
+scikit-learn	TF‑IDF vectorization and preprocessing
+Pandas / NumPy	Data handling and manipulation
+Jupyter Notebook	Interactive exploration and visualization
+Credits
+Infosys Springboard Internship Program
+scikit-learn and Python ML ecosystem
